@@ -1,7 +1,7 @@
 from playwright.sync_api import sync_playwright
 import time 
 from bs4 import BeautifulSoup
-import csv
+from savetofile import save_to_csv
 
 wantedurl = "https://www.wanted.co.kr"
 
@@ -51,14 +51,7 @@ def get_jobs(content):
         jobs_db.append(job_data)
     return jobs_db
 
-def save_to_csv(keyword, jobs_db):
-    file = open(f"wanted-jobs/{keyword}.csv", "w")
-    writer = csv.writer(file)
-    writer.writerow(["Title", "Company", "Link"])
-    for job in jobs_db:
-        writer.writerow(list(job.values()))
-
-def scrape_wanted_with_keywords(keywords):
+def scrape_wanted(keywords):
     # Launch browser
     p = sync_playwright().start()
     browser = p.chromium.launch(headless=False)
@@ -72,4 +65,4 @@ def scrape_wanted_with_keywords(keywords):
     p.stop()
 
 keywords = ["flutter", "python", "golang"]
-scrape_wanted_with_keywords(keywords)
+scrape_wanted(keywords)
