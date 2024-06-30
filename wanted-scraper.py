@@ -7,13 +7,14 @@ def wait():
     time.sleep(1)
 
 p = sync_playwright().start()
-
 browser = p.chromium.launch(headless=False)
 page = browser.new_page()
 
+# Go to wanted
 wantedurl = "https://www.wanted.co.kr"
 page.goto(f"{wantedurl}/wdlist")
 wait()
+
 # Click search button
 page.click("button[aria-label=\"검색\"]")
 wait() 
@@ -56,9 +57,10 @@ for job in jobs:
     }
     jobs_db.append(job_data)
 
-print(jobs_db)
-print(len(jobs_db))
+# print(jobs_db)
+# print(len(jobs_db))
 
+# Save to csv
 file = open("jobs.csv", "w")
 writer = csv.writer(file)
 writer.writerow(["Title", "Company", "Link"])
