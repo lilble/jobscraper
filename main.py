@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from wanted_scraper import get_jobs_with_keyword
 from datetime import datetime, timedelta
 
@@ -14,7 +14,7 @@ def home():
 def search():
     keyword = request.args.get("keyword")
     if not keyword:
-        return render_template('home.html')
+        return redirect('/')
     curr_time = datetime.now()
     if keyword in db and abs((curr_time - db[keyword]["time"]).total_seconds()) > 3600:
         jobs = db[keyword]
