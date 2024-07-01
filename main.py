@@ -13,6 +13,8 @@ def home():
 @app.route('/search')
 def search():
     keyword = request.args.get("keyword")
+    if not keyword:
+        return render_template('home.html')
     curr_time = datetime.now()
     if keyword in db and abs((curr_time - db[keyword]["time"]).total_seconds()) > 3600:
         jobs = db[keyword]
