@@ -8,7 +8,16 @@ wantedurl = "https://www.wanted.co.kr"
 def wait():
     time.sleep(1)
 
-def scrape_page(page, keyword):
+def scrape_page(keyword):
+    # Launch browser
+    p = sync_playwright().start()
+    browser = p.chromium.launch(headless=False)
+    page = browser.new_page()
+
+    # Go to wanted
+    page.goto(f"{wantedurl}/wdlist")
+    wait()
+
     # Click search button
     page.click("button[aria-label=\"검색\"]")
     wait() 
@@ -32,9 +41,10 @@ def scrape_page(page, keyword):
     wait()
 
     content = page.content()
+    p.stop()
     return content
 
-def get_jobs(content):
+def extract_jobs(content):
     # Get job data
     jobs_db = []
     soup = BeautifulSoup(content, "html.parser")
@@ -51,18 +61,11 @@ def get_jobs(content):
         jobs_db.append(job_data)
     return jobs_db
 
-def scrape_wanted(keywords):
-    # Launch browser
-    p = sync_playwright().start()
-    browser = p.chromium.launch(headless=False)
-    page = browser.new_page()
-    # Go to wanted
-    page.goto(f"{wantedurl}/wdlist")
-    wait()
-    for keyword in keywords:
-        jobs = get_jobs(scrape_page(page, keyword))
-        save_to_csv(keyword, jobs)
-    p.stop()
+def get_jobs_with_keyword(keyword):
+    return extract_jobs(scrape_page(keyword))
 
-keywords = ["flutter", "python", "golang"]
-scrape_wanted(keywords)
+if __name__ == "__main__":
+    keywords = ["flutter", "python", "golang"]
+    for keyword in keywords:
+        jobs = get_jobs_with_keyword(keyword)
+        save_to_csv(keyword, jobs)
